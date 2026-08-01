@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Pose model weights — downloaded, not source. See README.
+models/*.task
+models/*.bin

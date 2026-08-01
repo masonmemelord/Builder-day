@@ -23,6 +23,18 @@ export const YT_DLP_PATH = process.env.YT_DLP_PATH ?? "yt-dlp";
 const availabilityCache = new Map<string, Promise<boolean>>();
 
 /**
+ * The flag each binary answers a version query with.
+ *
+ * ffmpeg/ffprobe accept the single-dash form; yt-dlp does not — it parses
+ * `-version` as the bundled short flags `-v -e -r -s -i -o -n` and prints a
+ * usage message. That happens to exit 0, so the probe passes either way, but
+ * only by accident. Ask each tool the way it expects.
+ */
+function versionFlag(binary: string): string {
+  return /yt-dlp/.test(binary) ? "--version" : "-version";
+}
+
+/**
  * Probes a binary once per process and caches the result.
  *
  * The cache stores the promise rather than the resolved value so concurrent
@@ -32,7 +44,7 @@ export function isAvailable(binary: string): Promise<boolean> {
   const cached = availabilityCache.get(binary);
   if (cached) return cached;
 
-  const probe = execFileAsync(binary, ["-version"], { timeout: 5_000 })
+  const probe = execFileAsync(binary, [versionFlag(binary)], { timeout: 5_000 })
     .then(() => true)
     .catch(() => false);
 
