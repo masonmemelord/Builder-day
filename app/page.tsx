@@ -1,65 +1,138 @@
-import Image from "next/image";
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
 
-export default function Home() {
+const PIPELINE = [
+  {
+    step: "01",
+    title: "Ingest",
+    body: "Upload a file or paste a YouTube link with an optional in/out point. Both paths land in the same place.",
+  },
+  {
+    step: "02",
+    title: "Extract",
+    body: "ffmpeg pulls frames at 1 fps across the clip — enough to read technique without drowning in near-identical stills.",
+  },
+  {
+    step: "03",
+    title: "Pose",
+    body: "MediaPipe estimates 33 body landmarks per frame, giving stance width, guard height, and torso rotation as numbers rather than impressions.",
+  },
+  {
+    step: "04",
+    title: "Analyze",
+    body: "A vision model reads the frames and the pose measurements together, then reports stance, guard, footwork, output rate, gaps, and drills.",
+  },
+];
+
+export default async function Home() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="mx-auto max-w-4xl px-6">
+      <section className="border-b border-border py-20 sm:py-28">
+        <p className="mb-4 inline-block rounded-full border border-accent/40 bg-accent-soft px-3 py-1 text-xs font-medium uppercase tracking-[0.16em] text-accent">
+          Not-for-profit proof of concept
+        </p>
+
+        <h1 className="display max-w-2xl text-5xl leading-[0.95] sm:text-7xl">
+          Film study,
+          <br />
+          without the film room.
+        </h1>
+
+        <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted">
+          Upload sparring footage and get a technical breakdown: stance, guard,
+          footwork, output rate, the professional whose style you most resemble,
+          and the drills that close your gaps.
+        </p>
+
+        <div className="mt-8 flex flex-wrap items-center gap-4">
+          <Link
+            href={user ? "/upload" : "/signup"}
+            className="rounded-md bg-accent px-5 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            {user ? "Analyze a clip" : "Try the demo"}
+          </Link>
+          <Link
+            href="/terms"
+            className="text-sm text-muted underline underline-offset-4 transition-colors hover:text-foreground"
           >
-            Documentation
-          </a>
+            Read the disclaimer first
+          </Link>
         </div>
-      </main>
+
+        <p className="mt-8 max-w-xl text-sm leading-relaxed text-muted">
+          <span className="text-foreground">Before you start:</span> this is an
+          experiment, not a product. The analysis is AI-generated, frequently
+          imperfect, and is not coaching or medical advice. Nothing here is for
+          sale.
+        </p>
+      </section>
+
+      <section className="py-16">
+        <h2 className="display mb-8 text-2xl">How it works</h2>
+        <ol className="grid gap-5 sm:grid-cols-2">
+          {PIPELINE.map((item) => (
+            <li
+              key={item.step}
+              className="rounded-lg border border-border bg-surface p-6"
+            >
+              <p className="display mb-2 text-sm text-accent">{item.step}</p>
+              <h3 className="display mb-2 text-xl text-foreground">
+                {item.title}
+              </h3>
+              <p className="text-sm leading-relaxed text-muted">{item.body}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section className="border-t border-border py-16">
+        <h2 className="display mb-4 text-2xl">What it can&rsquo;t do</h2>
+        <ul className="max-w-2xl space-y-3 text-[15px] leading-relaxed text-muted">
+          <li className="flex gap-3">
+            <span aria-hidden className="text-accent">
+              —
+            </span>
+            <span>
+              It reads sampled frames, not continuous video. Strikes that happen
+              between samples are invisible to it, so output-rate figures are
+              estimates at best.
+            </span>
+          </li>
+          <li className="flex gap-3">
+            <span aria-hidden className="text-accent">
+              —
+            </span>
+            <span>
+              It can misread technique and state wrong conclusions confidently.
+              Two runs on the same clip may disagree.
+            </span>
+          </li>
+          <li className="flex gap-3">
+            <span aria-hidden className="text-accent">
+              —
+            </span>
+            <span>
+              It cannot see intent, fatigue, injury, or anything outside the
+              frame — and it must not be used to make decisions about training
+              through pain.
+            </span>
+          </li>
+          <li className="flex gap-3">
+            <span aria-hidden className="text-accent">
+              —
+            </span>
+            <span>
+              It is not a replacement for a coach. If the tool and your coach
+              disagree, your coach is right.
+            </span>
+          </li>
+        </ul>
+      </section>
     </div>
   );
 }

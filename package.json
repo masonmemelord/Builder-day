@@ -9,9 +9,16 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@mediapipe/tasks-vision": "^1.0.1",
+    "@napi-rs/canvas": "^1.0.3",
+    "@supabase/ssr": "^0.12.4",
+    "@supabase/supabase-js": "^2.111.0",
     "next": "16.2.12",
+    "openai": "^7.3.0",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "server-only": "^0.0.1",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -22,5 +29,9 @@
     "eslint-config-next": "16.2.12",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "overrides": {
+    "sharp": "^0.35.3",
+    "postcss": "^8.5.25"
   }
 }

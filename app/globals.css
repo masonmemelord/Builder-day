@@ -1,26 +1,89 @@
 @import "tailwindcss";
 
+/*
+ * Fight IQ — dark-first. A film-study tool is used next to video, so a bright
+ * chrome would fight the footage for attention. Light mode is supported but
+ * the app is designed around the dark palette.
+ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0d0e11;
+  --surface: #15171c;
+  --surface-raised: #1c1f26;
+  --border: #2a2e38;
+  --foreground: #ecebe6;
+  --muted: #9a9ba3;
+  --accent: #e2483a;
+  --accent-soft: #3a1c1a;
+  --signal: #d9b64a;
+  --success: #4fa87a;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --background: #f7f6f2;
+    --surface: #ffffff;
+    --surface-raised: #f0efe9;
+    --border: #dedbd2;
+    --foreground: #17181c;
+    --muted: #63656e;
+    --accent: #c93a2c;
+    --accent-soft: #fbe8e5;
+    --signal: #9a7c1c;
+    --success: #2f7a55;
+  }
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-border: var(--border);
   --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-signal: var(--signal);
+  --color-success: var(--success);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-display: var(--font-display);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Display type: condensed and uppercase, borrowed from fight-card typography. */
+.display {
+  font-family: var(--font-display), var(--font-geist-sans), sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-weight: 600;
+}
+
+::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* Keyboard focus stays visible everywhere; mouse clicks don't get a ring. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
