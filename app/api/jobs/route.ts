@@ -179,16 +179,28 @@ export async function POST(request: Request) {
  */
 async function kickWorker(request: Request): Promise<void> {
   const secret = process.env.WORKER_SECRET;
-  if (!secret) return;
+  if (!secret) {
+    // Without this warning an unset secret is invisible: the job is created
+    // (201), the client polls happily, and nothing ever claims the work. The
+    // queue looks like it's hanging when in fact it never started.
+    console.warn(
+      "[jobs] WORKER_SECRET is not set — the worker cannot be reached, so " +
+        "queued jobs will never be processed. Set it in .env.local and restart.",
+    );
+    return;
+  }
 
   try {
     const url = new URL("/api/worker/process", request.url);
     await fetch(url, {
       method: "POST",
       headers: { authorization: `Bearer ${secret}` },
-      signal: AbortSignal.timeout(1_000),
+      // Long enough for the worker to accept the connection and begin, short
+      // enough not to hold up the user's response. Aborting here does not stop
+      // the worker — it has already claimed the job and runs to completion.
+      signal: AbortSignal.timeout(3_000),
     });
   } catch {
-    // Expected — we don't wait for the worker to finish.
+    // Expected: we abort as soon as the worker has picked up the request.
   }
 }

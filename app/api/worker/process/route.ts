@@ -24,7 +24,13 @@ function secretMatches(provided: string, expected: string): boolean {
 
 function authorize(request: Request): boolean {
   const expected = process.env.WORKER_SECRET;
-  if (!expected) return false;
+  if (!expected) {
+    console.error(
+      "[worker] WORKER_SECRET is not set — refusing every request. " +
+        "The queue will never drain until it is configured.",
+    );
+    return false;
+  }
 
   const header = request.headers.get("authorization");
   if (header?.startsWith("Bearer ")) {
